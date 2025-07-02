@@ -13,8 +13,12 @@ jobs:
   build-docker:
     uses: ./.github/workflows/docker-publish.yml
     secrets:
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
       docker_hub_user: ${{ secrets.DOCKER_HUB_USER }}
-      docker_hub_pass: ${{ secrets.DOCKER_HUB_PASS }}
+    with:
+      aws_region: ${{ vars.AWS_REGION }}
 
   deploy-aws:
     needs: build-docker
