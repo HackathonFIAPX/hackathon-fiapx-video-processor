@@ -1,5 +1,6 @@
 resource "aws_sqs_queue" "processor_queue" {
   name = "video-processor-queue"
+  visibility_timeout_seconds = 510
 }
 
 resource "aws_sqs_queue_policy" "sqs_queue_allow_sns" {
