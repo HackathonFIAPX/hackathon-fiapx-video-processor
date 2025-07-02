@@ -9,6 +9,6 @@ ENV PATH="/opt/bin:${PATH}"
 
 COPY src/ ${LAMBDA_TASK_ROOT}/
 COPY package*.json ./
-RUN yarn
+RUN npm install --production
 
 CMD ["dist/index.handler"]
