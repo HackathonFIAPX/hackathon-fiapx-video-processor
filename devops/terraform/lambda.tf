@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "video_processor" {
   function_name = "fiapx-video-processor"
   package_type  = "Image"
-  image_uri     = "${var.docker_hub_user}/hackathon-fiapx-video-processor:${var.tc_image_tag}"
+  image_uri     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/hackathon-fiapx-video-processor:${var.tc_image_tag}"
   role          = data.aws_iam_role.lab_role.arn
   timeout       = 500
 }
