@@ -1,0 +1,32 @@
+{
+  "name": "hackathon-fiapx-video-processor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.147",
+    "@types/axios": "^0.9.36",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.10",
+    "@types/winston": "^2.4.4",
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "ts-jest": "^29.3.4",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.840.0",
+    "@aws-sdk/s3-request-presigner": "^3.840.0",
+    "axios": "^1.8.4",
+    "ts-node": "^10.9.2",
+    "winston": "^3.17.0"
+  }
+}

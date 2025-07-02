@@ -1,0 +1,57 @@
+name: SonarCloud PR Analysis
+
+on:
+  workflow_call:
+    secrets:
+      sonar_token:
+        required: true
+        description: 'SonarCloud token for analysis'
+
+jobs:
+  build:
+    name: Build and analyze on SonarCloud
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run tests with coverage
+        run: yarn test:coverage
+
+      - name: List coverage folder (debug)
+        run: ls -lh coverage
+      
+      - name: Show lcov.info content
+        run: |
+          echo "=== LCOV INFO BEGIN ==="
+          cat coverage/lcov.info || echo "lcov.info not found"
+          echo "=== LCOV INFO END ==="
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.sonar_token }}
+          SONAR_PROJECT_KEY: HackathonFIAPX_hackathon-fiapx-admin
+          SONAR_ORGANIZATION: hackathon-fiapx
+        with:
+          args: >
+            -Dsonar.projectKey=HackathonFIAPX_hackathon-fiapx-admin
+            -Dsonar.organization=hackathon-fiapx
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.sources=src
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=**/*.test.ts,**/*.spec.ts
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.exclusions=**/tests/**,**/*.spec.ts,**/config/**

@@ -1,0 +1,34 @@
+name: Docker Image CI/CD
+
+on:
+  workflow_call:
+    secrets:
+      docker_hub_user:
+        required: true
+        description: 'Docker Hub username'
+      docker_hub_pass:
+        required: true
+        description: 'Docker Hub password (PAT or actual password)'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get Short commit hash
+        run: echo "TC_IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.docker_hub_user }}
+          password: ${{ secrets.docker_hub_pass }}
+
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.docker_hub_user }}/hackathon-fiapx-video-processor:${{ env.TC_IMAGE_TAG }} -f devops/docker/Dockerfile .
+
+      - name: Push Docker Image
+        run: docker push ${{ secrets.docker_hub_user }}/hackathon-fiapx-video-processor:${{ env.TC_IMAGE_TAG }}
