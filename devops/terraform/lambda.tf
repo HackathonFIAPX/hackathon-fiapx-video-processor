@@ -2,7 +2,7 @@ resource "aws_lambda_function" "video_processor" {
   function_name = "fiapx-video-processor"
   package_type  = "Image"
   image_uri     = "docker.io/${var.docker_hub_user}/hackathon-fiapx-video-processor:${var.tc_image_tag}"
-  role          = aws_iam_role.lab_role.arn
+  role          = data.aws_iam_role.lab_role.arn
   timeout       = 500
 }
 
