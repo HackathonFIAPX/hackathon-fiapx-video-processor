@@ -1,4 +1,3 @@
-# --- Stage 1: Builder (para compilar o código e instalar devDependencies) ---
 FROM public.ecr.aws/lambda/nodejs:18 AS builder
 
 WORKDIR /app

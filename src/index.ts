@@ -38,6 +38,7 @@ async function extrairDuracao(url: string) {
  * Handler principal da Lambda
  */
 export const handler = async (event: SQSEvent, _: Context) => {
+  console.log("Evento recebido:", JSON.stringify(event, null, 2));
   // Event SQS tem múltiplas mensagens
   for (const record of event.Records) {
     try {
