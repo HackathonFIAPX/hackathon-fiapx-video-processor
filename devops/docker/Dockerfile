@@ -1,5 +1,7 @@
 FROM public.ecr.aws/lambda/nodejs:18
 
+ARG CACHE_BUSTER
+
 RUN mkdir -p /opt/bin
 
 COPY devops/tools/ffprobe /opt/bin/ffprobe
