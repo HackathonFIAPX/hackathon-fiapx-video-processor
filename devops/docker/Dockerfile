@@ -1,24 +1,28 @@
-FROM public.ecr.aws/lambda/nodejs:18
+# --- Stage 1: Builder (para compilar o código e instalar devDependencies) ---
+FROM public.ecr.aws/lambda/nodejs:18 AS builder
 
-ARG CACHE_BUSTER
+WORKDIR /app
 
-RUN mkdir -p /opt/bin
-
-COPY devops/tools/ffprobe /opt/bin/ffprobe
-RUN chmod +x /opt/bin/ffprobe
-
-ENV PATH="/opt/bin:${PATH}"
-
-COPY tsconfig.json ./
-COPY tsconfig-build.json ./
 COPY package*.json ./
+COPY tsconfig*.json ./
+
+COPY src/ ./src/
 
 RUN npm install
 
 RUN npm run build
 
-RUN npm prune --production
+FROM public.ecr.aws/lambda/nodejs:18
 
-COPY dist/ ${LAMBDA_TASK_ROOT}/
+RUN mkdir -p /opt/bin
+COPY devops/tools/ffprobe /opt/bin/ffprobe
+RUN chmod +x /opt/bin/ffprobe
+ENV PATH="/opt/bin:${PATH}"
+
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+COPY --from=builder /app/dist/ ./
+
+COPY --from=builder /app/node_modules/ ./node_modules/
 
 CMD ["index.handler"]
