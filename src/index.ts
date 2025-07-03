@@ -5,7 +5,9 @@ import { exec } from "child_process";
 import { promisify } from "util";
 
 const execPromise = promisify(exec);
-const s3Client = new S3Client({});
+const s3Client = new S3Client({
+  region: "us-west-2",
+});
 
 /**
  * Função que gera uma URL pré-assinada para GET no S3
