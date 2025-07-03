@@ -7,8 +7,16 @@ RUN chmod +x /opt/bin/ffprobe
 
 ENV PATH="/opt/bin:${PATH}"
 
-COPY src/ ${LAMBDA_TASK_ROOT}/
+COPY tsconfig.json ./
+COPY tsconfig-build.json ./
 COPY package*.json ./
-RUN npm install --production
 
-CMD ["dist/index.handler"]
+RUN npm install
+
+RUN npm run build
+
+RUN npm prune --production
+
+COPY dist/ ${LAMBDA_TASK_ROOT}/
+
+CMD ["index.handler"]
