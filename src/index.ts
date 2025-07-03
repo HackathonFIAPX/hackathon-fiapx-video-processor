@@ -65,6 +65,31 @@ export const handler = async (event: SQSEvent, _: Context) => {
 
         console.log(`Duração do vídeo: ${duracao} segundos`);
         // Aqui você pode salvar a duração no banco, enviar para outro serviço etc.
+
+        const oneSecoundQtt = 60
+        const qttOfEventsToSend = Math.ceil(duracao / oneSecoundQtt);
+
+        for (let i = 0; i < qttOfEventsToSend; i++) {
+          const eventIndex = i + 1; // Começa do 1 para facilitar a leitura
+          const lastEvent = qttOfEventsToSend - 1;
+          const penultimateEvent = qttOfEventsToSend - 2;
+          const duration = i != lastEvent ?
+            oneSecoundQtt :
+            duracao - (penultimateEvent * oneSecoundQtt);
+
+          const eventData = {
+            bucket,
+            key,
+            startTime: i * oneSecoundQtt,
+            duration,
+            eventIndex: eventIndex,
+            totalEvents: qttOfEventsToSend,
+          };
+
+          // Aqui você pode enviar o evento para outro serviço, como SNS, SQS, etc.
+          console.log("Enviando evento:", JSON.stringify(eventData, null, 2));
+          // Exemplo: await enviarParaOutroServico(eventData);
+        }
       }
     } catch (error) {
       console.error("Erro ao processar registro SQS:", error);
