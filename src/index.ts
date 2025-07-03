@@ -1,4 +1,4 @@
-import { Context, SQSEvent } from "aws-lambda";
+import { Context, SQSEvent, S3EventRecord } from "aws-lambda";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { exec } from "child_process";
@@ -44,9 +44,12 @@ export const handler = async (event: SQSEvent, _: Context) => {
     try {
       // A mensagem do SQS contém o evento original do S3 como JSON na propriedade body
       const s3Event = JSON.parse(record.body);
+      console.log("Registro SQS recebido:", JSON.stringify(s3Event, null, 2));
+      const s3EventRecord = JSON.parse(s3Event.Message);
+      console.log("Registro S3 recebido:", JSON.stringify(s3EventRecord, null, 2));
 
       // S3EventRecords podem ter múltiplos eventos, geralmente só 1
-      for (const rec of s3Event.Records) {
+      for (const rec of s3EventRecord.Records) {
         const bucket = rec.s3.bucket.name;
         const key = decodeURIComponent(rec.s3.object.key.replace(/\+/g, " "));
 
