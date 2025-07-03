@@ -72,10 +72,9 @@ export const handler = async (event: SQSEvent, _: Context) => {
         for (let i = 0; i < qttOfEventsToSend; i++) {
           const eventIndex = i + 1; // Começa do 1 para facilitar a leitura
           const lastEvent = qttOfEventsToSend - 1;
-          const penultimateEvent = qttOfEventsToSend - 2;
           const duration = i != lastEvent ?
             oneSecoundQtt :
-            duracao - (penultimateEvent * oneSecoundQtt);
+            duracao - (lastEvent * oneSecoundQtt);
 
           const eventData = {
             bucket,
