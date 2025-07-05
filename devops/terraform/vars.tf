@@ -23,6 +23,11 @@ variable "aws_region" {
   type        = string
 }
 
+variable "aws_bucket_name" {
+  description = "Name of the S3 bucket"
+  type        = string
+}
+
 variable "docker_hub_user" {
   description = "Docker Hub username"
   type        = string
