@@ -21,7 +21,13 @@ export class VideoProcessor {
         const router = new Router();
         router.use(EVideoProcessorRoutes.NOTIFICATION,processS3NotificationsController.execute.bind(processS3NotificationsController));
 
-        const response = await router.execute(type || Type, data);
+        let response;
+        if (EVideoProcessorRoutes.NOTIFICATION == type) {
+            response = await router.execute(Type, body);
+        } else {
+            response = await router.execute(type, data);
+        }
+
         Logger.info('VideoProcessor.handler', 'end', response);
 
         return response;
