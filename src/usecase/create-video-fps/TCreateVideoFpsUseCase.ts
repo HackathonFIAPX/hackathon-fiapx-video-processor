@@ -5,6 +5,6 @@ export type TCreateVideoFpsUseCaseInput = {
     duration: number,
     eventIndex: number,
     totalEvents: number,
-  }
+}
 
 export type TCreateVideoFpsUseCaseOutput = void

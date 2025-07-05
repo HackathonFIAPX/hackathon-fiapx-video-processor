@@ -2,6 +2,7 @@ import { envS3 } from "../../config/s3";
 import { IS3Handler } from "../../infra/aws/s3/IS3Handler";
 import { S3Handler } from "../../infra/aws/s3/S3Handler";
 import { EImageType } from "../../infra/aws/s3/TS3Handler";
+import { Logger } from "../../infra/utils/logger";
 import { IVideoManager } from "../../infra/video-manager/IVideoManager";
 import { VideoManager } from "../../infra/video-manager/VideoManager";
 import { ICreateVideoFpsUseCase } from "./ICreateVideoFpsUseCase";
@@ -16,6 +17,7 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
 
     async execute(input: TCreateVideoFpsUseCaseInput): Promise<TCreateVideoFpsUseCaseOutput> {
         const { bucket, key } = input;
+        Logger.info("CreateVideoFpsUseCase", "Executing create video FPS", { input });
 
         const videoUrl = await this.s3Handler.generatePresignedURL({ bucket, key });
         const dirWithImages = await this.generateFPS(input, videoUrl);
@@ -27,23 +29,33 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
         const { startTime, duration } = input;
         const fileName = `user-info-test-${Date.now()}`;
 
+        Logger.info("CreateVideoFpsUseCase", "Generating FPS from S3 video URL", {
+            s3VideoURL,
+            startTime,
+            duration,
+            fileName,
+        });
         if (input.eventIndex === input.totalEvents) {
-            const result = await this.videoManager.generateFPSFromS3VideoURLAndSpecificDuration({
+            Logger.info("CreateVideoFpsUseCase", "Generating FPS with start time")
+            const result = await this.videoManager.generateFPSFromS3VideoURLAndStartTime({
                 s3VideoURL,
-                duration,
                 startTime,
                 fileName,
             });
-
+            
+            Logger.info("CreateVideoFpsUseCase", "FPS generated successfully", { imagesDir: result.imagesDir });
             return result.imagesDir;
         }
 
-        const result = await this.videoManager.generateFPSFromS3VideoURLAndStartTime({
+        Logger.info("CreateVideoFpsUseCase", "Generating FPS with specific duration");
+        const result = await this.videoManager.generateFPSFromS3VideoURLAndSpecificDuration({
             s3VideoURL,
+            duration,
             startTime,
             fileName,
         });
 
+        Logger.info("CreateVideoFpsUseCase", "FPS generated successfully", { imagesDir: result.imagesDir });
         return result.imagesDir;
     }
 

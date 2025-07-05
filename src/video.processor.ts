@@ -2,6 +2,7 @@ import { Context, SQSEvent } from "aws-lambda";
 import { Router } from "./controllers/router";
 import { Logger } from "./infra/utils/logger";
 import { ProcessS3NotificationsController } from "./controllers/ProcessS3Notifications.controller";
+import { CreateVideoFpsController } from "./controllers/CreateVideoFPS.controller";
 
 export enum EVideoProcessorRoutes {
     NOTIFICATION = 'Notification',
@@ -16,11 +17,13 @@ export class VideoProcessor {
         const body = JSON.parse(record.body);
         const { Type, type, data } = body;
 
-        const processS3NotificationsController = new ProcessS3NotificationsController()
+        const processS3NotificationsController = new ProcessS3NotificationsController();
+        const createVideoFpsController = new CreateVideoFpsController();
 
         const router = new Router();
         router.use(EVideoProcessorRoutes.NOTIFICATION,processS3NotificationsController.execute.bind(processS3NotificationsController));
-
+        router.use(EVideoProcessorRoutes.GENERATE_FPS, createVideoFpsController.execute.bind(createVideoFpsController));
+        
         let response;
         if (EVideoProcessorRoutes.NOTIFICATION == Type) {
             response = await router.execute(Type, body);
