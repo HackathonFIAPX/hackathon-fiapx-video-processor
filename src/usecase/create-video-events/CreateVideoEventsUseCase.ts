@@ -1,5 +1,6 @@
 import { IS3Handler } from "../../infra/aws/s3/IS3Handler";
 import { S3Handler } from "../../infra/aws/s3/S3Handler";
+import { ESQSMessageType, SQSHandler } from "../../infra/aws/sqs/SQSHandler";
 import { Logger } from "../../infra/utils/logger";
 import { IVideoManager } from "../../infra/video-manager/IVideoManager";
 import { VideoManager } from "../../infra/video-manager/VideoManager";
@@ -46,6 +47,11 @@ export class CreateVideoEventsUseCase implements ICreateVideoEventsUseCase {
             totalEvents: qttOfEventsToSend,
           };
 
+          Logger.info("CreateVideoEvents", "Creating video event", eventData);
+          await SQSHandler.sendMessage({
+            data: eventData,
+            type: ESQSMessageType.GENERATE_FPS 
+          })
           Logger.info("CreateVideoEvents", "Sending video event", eventData);
         }
         
