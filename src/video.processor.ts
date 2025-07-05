@@ -4,7 +4,7 @@ import { Logger } from "./infra/utils/logger";
 import { ProcessS3NotificationsController } from "./controllers/ProcessS3Notifications.controller";
 
 export enum EVideoProcessorRoutes {
-    NOTIFICATION = 'notification',
+    NOTIFICATION = 'Notification',
     GENERATE_FPS = 'video.processor.generate.fps',
 }
 
