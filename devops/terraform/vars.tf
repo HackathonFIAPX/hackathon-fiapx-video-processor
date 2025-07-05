@@ -18,11 +18,6 @@ variable "aws_session_token" {
   type        = string
 }
 
-variable "aws_bucket_name" {
-  description = "Bucket name for S3"
-  type        = string
-}
-
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
