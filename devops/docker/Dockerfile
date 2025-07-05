@@ -16,6 +16,9 @@ FROM public.ecr.aws/lambda/nodejs:18
 RUN mkdir -p /opt/bin
 COPY devops/tools/ffprobe /opt/bin/ffprobe
 RUN chmod +x /opt/bin/ffprobe
+COPY devops/tools/ffmpeg /opt/bin/ffmpeg
+RUN chmod +x /opt/bin/ffmpeg
+
 ENV PATH="/opt/bin:${PATH}"
 
 WORKDIR ${LAMBDA_TASK_ROOT}

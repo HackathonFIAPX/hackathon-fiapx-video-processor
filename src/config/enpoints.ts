@@ -1,0 +1,1 @@
+export const envEndpoints = Object.freeze({})
