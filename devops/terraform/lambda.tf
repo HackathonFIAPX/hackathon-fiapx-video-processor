@@ -12,6 +12,7 @@ resource "aws_lambda_function" "video_processor" {
       AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
       AWS_SESSION_TOKEN = var.aws_session_token
       SQS_VIDEO_PROCESSOR_ID = aws_sqs_queue.processor_queue.id
+      S3_FPS_BUCKET_NAME = aws_s3_bucket.video_fps_bucket.bucket
     }
   }
 }
