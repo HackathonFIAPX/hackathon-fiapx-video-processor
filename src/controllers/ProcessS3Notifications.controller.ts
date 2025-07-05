@@ -4,18 +4,7 @@ import { IController } from "./controller";
 import { HandlerResponse } from "./router";
 
 type TProcessS3NotificationsController = {
-    Message: {
-        Records: Array<{
-            s3: {
-                bucket: {
-                    name: string;
-                };
-                object: {
-                    key: string;
-                };
-            };
-        }>;
-    }
+    Message: string;
 }
 
 export class ProcessS3NotificationsController implements IController<TProcessS3NotificationsController> {
@@ -24,9 +13,10 @@ export class ProcessS3NotificationsController implements IController<TProcessS3N
     ) {}
 
     async execute(request: TProcessS3NotificationsController): Promise<HandlerResponse> {
+        const body = JSON.parse(request.Message);
         await this.createVideoEventsUseCase.execute({
-            bucket: request.Message.Records[0].s3.bucket.name,
-            key: request.Message.Records[0].s3.object.key,
+            bucket: body.Records[0].s3.bucket.name,
+            key: body.Records[0].s3.object.key,
         });
         
         return {
