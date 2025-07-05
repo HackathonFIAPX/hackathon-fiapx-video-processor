@@ -22,7 +22,7 @@ export class VideoProcessor {
         router.use(EVideoProcessorRoutes.NOTIFICATION,processS3NotificationsController.execute.bind(processS3NotificationsController));
 
         let response;
-        if (EVideoProcessorRoutes.NOTIFICATION == type) {
+        if (EVideoProcessorRoutes.NOTIFICATION == Type) {
             response = await router.execute(Type, body);
         } else {
             response = await router.execute(type, data);
