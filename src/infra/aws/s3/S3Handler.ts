@@ -51,7 +51,7 @@ export class S3Handler implements IS3Handler {
         const { bucket, outputKey, filesPath, imageType } = params;
         const uploadPromises = filesPath.map(filePath => this.uploadImage({
             bucket,
-            outputKey,
+            outputKey: `${outputKey}/${this.getFileName(filePath)}`,
             filePath,
             imageType,
         }));
@@ -63,5 +63,10 @@ export class S3Handler implements IS3Handler {
             outputKey,
             imageType,
         });
+    }
+
+    private getFileName(pathFile: string): string {
+        const parts = pathFile.split("/");
+        return parts[parts.length - 1];
     }
 }
