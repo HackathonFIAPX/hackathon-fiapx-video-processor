@@ -13,6 +13,7 @@
   "author": "Gregori Simei",
   "license": "ISC",
   "devDependencies": {
+    "@types/archiver": "^6.0.3",
     "@types/aws-lambda": "^8.10.147",
     "@types/axios": "^0.9.36",
     "@types/jest": "^29.5.14",
@@ -28,6 +29,7 @@
     "@aws-sdk/client-s3": "^3.840.0",
     "@aws-sdk/client-sqs": "^3.840.0",
     "@aws-sdk/s3-request-presigner": "^3.840.0",
+    "archiver": "^7.0.1",
     "axios": "^1.8.4",
     "ts-node": "^10.9.2",
     "winston": "^3.17.0"

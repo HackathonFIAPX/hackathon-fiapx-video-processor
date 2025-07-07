@@ -6,7 +6,11 @@ export type TGetPresignedUrlParams = {
 export type TGetPresignedUrlResponse = string;
 
 export enum EImageType {
-    JPEG = "image/jpeg",
+    JPEG    = "image/jpeg",
+}
+
+export enum EFileType {
+    ZIP     = "application/zip",
 }
 
 export type TUploadImageParams = {
@@ -26,3 +30,13 @@ export type TUploadImageSParams = {
 };
 
 export type TUploadImagesResponse = void;
+
+export type TUploadZipParams = {
+    bucket: string;
+    outputKey: string;
+    zipFilePath: string;
+    fileType: EFileType;
+    fileName: string;
+}
+
+export type TUploadZipResponse = void;

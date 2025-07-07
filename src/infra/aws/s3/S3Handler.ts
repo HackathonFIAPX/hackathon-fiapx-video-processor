@@ -1,5 +1,5 @@
 import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { TGetPresignedUrlParams, TGetPresignedUrlResponse, TUploadImageParams, TUploadImageResponse, TUploadImageSParams, TUploadImagesResponse } from "./TS3Handler";
+import { TGetPresignedUrlParams, TGetPresignedUrlResponse, TUploadImageParams, TUploadImageResponse, TUploadImageSParams, TUploadImagesResponse, TUploadZipParams, TUploadZipResponse } from "./TS3Handler";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { IS3Handler } from "./IS3Handler";
 import { envAWS } from "../../../config/aws";
@@ -68,5 +68,29 @@ export class S3Handler implements IS3Handler {
     private getFileName(pathFile: string): string {
         const parts = pathFile.split("/");
         return parts[parts.length - 1];
+    }
+
+    async uploadZip(params: TUploadZipParams): Promise<TUploadZipResponse> {
+        const { bucket, outputKey, zipFilePath, fileType } = params;
+        Logger.info("S3Handler", "Uploading zip file to S3", {
+            bucket,
+            outputKey,
+            zipFilePath,
+            fileType,
+        });
+
+        const fileContent = readFileSync(zipFilePath);
+        const command = new PutObjectCommand({
+            Bucket: bucket,
+            Key: outputKey,
+            Body: fileContent,
+            ContentType: fileType,
+        });
+
+        await s3Client.send(command);
+        Logger.info("S3Handler", "Zip file uploaded successfully", {
+            bucket,
+            outputKey,
+        });
     }
 }

@@ -1,10 +1,12 @@
 import { envS3 } from "../../config/s3";
 import { IS3Handler } from "../../infra/aws/s3/IS3Handler";
 import { S3Handler } from "../../infra/aws/s3/S3Handler";
-import { EImageType } from "../../infra/aws/s3/TS3Handler";
+import { EFileType, EImageType } from "../../infra/aws/s3/TS3Handler";
 import { Logger } from "../../infra/utils/logger";
 import { IVideoManager } from "../../infra/video-manager/IVideoManager";
 import { VideoManager } from "../../infra/video-manager/VideoManager";
+import { IZipper } from "../../infra/zipper/IZipper";
+import { Zipper } from "../../infra/zipper/Zipper";
 import { ICreateVideoFpsUseCase } from "./ICreateVideoFpsUseCase";
 import { TCreateVideoFpsUseCaseInput, TCreateVideoFpsUseCaseOutput } from "./TCreateVideoFpsUseCase";
 import * as fs from "fs/promises";
@@ -12,7 +14,8 @@ import * as fs from "fs/promises";
 export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
     constructor(
         private readonly videoManager: IVideoManager = new VideoManager(),
-        private readonly s3Handler: IS3Handler = new S3Handler()
+        private readonly s3Handler: IS3Handler = new S3Handler(),
+        private readonly zipper: IZipper = new Zipper()
     ) {}
 
     async execute(input: TCreateVideoFpsUseCaseInput): Promise<TCreateVideoFpsUseCaseOutput> {
@@ -21,8 +24,9 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
 
         const videoUrl = await this.s3Handler.generatePresignedURL({ bucket, key });
         const dirWithImages = await this.generateFPS(input, videoUrl);
+        const systemFile = await this.zipper.zipFolder(dirWithImages, `user-info-test-${Date.now()}`);
 
-        await this.uploadImagesToS3(dirWithImages);
+        await this.uploadZippedFileToS3(systemFile);
     }
 
     private async generateFPS(input: TCreateVideoFpsUseCaseInput, s3VideoURL: string): Promise<string> {
@@ -59,17 +63,18 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
         return result.imagesDir;
     }
 
-    private async uploadImagesToS3(imagesDir: string): Promise<void> {
-        const generatedFiles = await fs.readdir(imagesDir);
-        const imageFiles = generatedFiles.filter(file => file.endsWith('.jpg') || file.endsWith('.png'));
+    private async uploadZippedFileToS3(zipFilePath: string): Promise<void> {
+        const outputKey = `user_info/test`;
+        Logger.info("CreateVideoFpsUseCase", "Uploading zipped file to S3", { zipFilePath, outputKey });
 
-        const filesPath = imageFiles.map(file => `${imagesDir}/${file}`)
-
-        await this.s3Handler.uploadImages({
+        await this.s3Handler.uploadZip({
             bucket: envS3.fpsBucketName,
-            outputKey: `user_info/test`,
-            filesPath,
-            imageType: EImageType.JPEG,
-        })
+            outputKey,
+            fileType: EFileType.ZIP,
+            zipFilePath,
+            fileName: `user-info-test-${Date.now()}.zip`,
+        });
+
+        Logger.info("CreateVideoFpsUseCase", "Zipped file uploaded successfully", { outputKey });
     }
 }
