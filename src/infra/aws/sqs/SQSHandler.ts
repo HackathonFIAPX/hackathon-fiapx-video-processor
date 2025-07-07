@@ -24,6 +24,7 @@ export type TSQSMessage = {
 export class SQSHandler {
     public static sendMessage = async (request: TSQSMessage) => {
         try {
+            Logger.info("SQSHandler", "Sending message to SQS", { request })
             await sqsClient.send(new SendMessageCommand({
                 QueueUrl: envSQS.videoProcessorId,
                 MessageBody: JSON.stringify(request),
