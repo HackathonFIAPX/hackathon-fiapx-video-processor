@@ -7,10 +7,6 @@ resource "aws_lambda_function" "video_processor" {
 
   environment {
     variables = {
-      AWS_REGION = var.aws_region
-      AWS_ACCESS_KEY_ID = var.aws_access_key_id
-      AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
-      AWS_SESSION_TOKEN = var.aws_session_token
       SQS_VIDEO_PROCESSOR_ID = aws_sqs_queue.processor_queue.id
       S3_FPS_BUCKET_NAME = aws_s3_bucket.video_fps_bucket.bucket
     }
