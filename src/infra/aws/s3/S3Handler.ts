@@ -15,7 +15,7 @@ export class S3Handler implements IS3Handler {
         const { bucket, key } = params;
         const command = new GetObjectCommand({ Bucket: bucket, Key: key });
         Logger.info("S3Handler", "Generating presigned URL", { bucket, key });
-        return getSignedUrl(s3Client, command, { expiresIn: 300 });
+        return getSignedUrl(s3Client, command, { expiresIn: 900 });
     }
 
     async uploadImage(params: TUploadImageParams): Promise<TUploadImageResponse> {

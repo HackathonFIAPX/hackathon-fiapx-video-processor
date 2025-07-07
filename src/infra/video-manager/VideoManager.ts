@@ -48,7 +48,7 @@ export class VideoManager implements IVideoManager {
         // -r: Output frame rate (5 fps)
         // -q:v: Quality of the output video (2 is good for JPG, // 1-31, lower is better)
         // The output will be a series of JPG images named like `fileName-%03d.jpg` in the `/tmp` directory.
-        const cmd = `ffmpeg -y -ss ${startTime} -i "${s3VideoURL}" -t ${duration} -r 5 -q:v 2 ${outputPath}`;
+        const cmd = `ffmpeg -y -ss ${startTime} -i "${s3VideoURL}" -t ${duration} -r 5 -q:v 2 ${outputPath} </dev/null`;
         Logger.info("VideoManager", "Executing ffmpeg command", { cmd });
 
         return execPromise(cmd)
@@ -78,7 +78,7 @@ export class VideoManager implements IVideoManager {
         // -r: Output frame rate (5 fps)
         // -q:v: Quality of the output video (2 is good for JPG, // 1-31, lower is better)
         // The output will be a series of JPG images named like `fileName-%03d.jpg` in the `/tmp` directory.
-        const cmd = `ffmpeg -y -ss ${startTime} -i "${s3VideoURL}" -r 5 -q:v 2 ${outputPath}`;
+        const cmd = `ffmpeg -y -ss ${startTime} -i "${s3VideoURL}" -r 5 -q:v 2 ${outputPath} </dev/null`;
         Logger.info("VideoManager", "Executing ffmpeg command", { cmd });
 
         return execPromise(cmd)
