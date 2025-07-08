@@ -18,41 +18,41 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
     ) {}
 
     async execute(input: TCreateVideoFpsUseCaseInput): Promise<TCreateVideoFpsUseCaseOutput> {
-        const { bucket, key } = input;
-        Logger.info("CreateVideoFpsUseCase", "Executing create video FPS", { input });
+        const { bucket, key, eventIndex, startTime } = input;
+        Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "Executing create video FPS", { input });
 
         const videoUrl = await this.s3Handler.generatePresignedURL({ bucket, key });
         const dirWithImages = await this.generateFPS(input, videoUrl);
-        Logger.info("CreateVideoFpsUseCase", "FPS images generated", { dirWithImages });
+        Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "FPS images generated", { dirWithImages });
         
-        const systemFile = await this.zipper.zipFolder(dirWithImages, `user-info-test-${Date.now()}`);
+        const systemFile = await this.zipper.zipFolder(dirWithImages, `idx-${eventIndex}-start-${startTime}-now-${Date.now()}`);
 
-        await this.uploadZippedFileToS3(systemFile);
+        await this.uploadZippedFileToS3(systemFile, input);
     }
 
     private async generateFPS(input: TCreateVideoFpsUseCaseInput, s3VideoURL: string): Promise<string> {
-        const { startTime, duration } = input;
+        const { startTime, duration, eventIndex } = input;
         const fileName = `user-info-test-${Date.now()}`;
 
-        Logger.info("CreateVideoFpsUseCase", "Generating FPS from S3 video URL", {
+        Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "Generating FPS from S3 video URL", {
             s3VideoURL,
             startTime,
             duration,
             fileName,
         });
         if (input.eventIndex === input.totalEvents) {
-            Logger.info("CreateVideoFpsUseCase", "Generating FPS with start time")
+            Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "Generating FPS with start time")
             const result = await this.videoManager.generateFPSFromS3VideoURLAndStartTime({
                 s3VideoURL,
                 startTime,
                 fileName,
             });
             
-            Logger.info("CreateVideoFpsUseCase", "FPS generated successfully", { imagesDir: result.imagesDir });
+            Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "FPS generated successfully", { imagesDir: result.imagesDir });
             return result.imagesDir;
         }
 
-        Logger.info("CreateVideoFpsUseCase", "Generating FPS with specific duration");
+        Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "Generating FPS with specific duration");
         const result = await this.videoManager.generateFPSFromS3VideoURLAndSpecificDuration({
             s3VideoURL,
             duration,
@@ -60,22 +60,23 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
             fileName,
         });
 
-        Logger.info("CreateVideoFpsUseCase", "FPS generated successfully", { imagesDir: result.imagesDir });
+        Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "FPS generated successfully", { imagesDir: result.imagesDir });
         return result.imagesDir;
     }
 
-    private async uploadZippedFileToS3(zipFilePath: string): Promise<void> {
+    private async uploadZippedFileToS3(zipFilePath: string, input: TCreateVideoFpsUseCaseInput): Promise<void> {
+        const { eventIndex, startTime, totalEvents } = input;
         const outputKey = `user_info/test`;
-        Logger.info("CreateVideoFpsUseCase", "Uploading zipped file to S3", { zipFilePath, outputKey });
+        Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "Uploading zipped file to S3", { zipFilePath, outputKey });
 
         await this.s3Handler.uploadZip({
             bucket: envS3.fpsBucketName,
             outputKey,
             fileType: EFileType.ZIP,
             zipFilePath,
-            fileName: `user-info-test-${Date.now()}.zip`,
+            fileName: `idx-${eventIndex}-start-${startTime}-now-${Date.now()}.zip`,
         });
 
-        Logger.info("CreateVideoFpsUseCase", "Zipped file uploaded successfully", { outputKey });
+        Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "Zipped file uploaded successfully", { outputKey });
     }
 }
