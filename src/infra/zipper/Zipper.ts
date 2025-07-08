@@ -27,7 +27,7 @@ export class Zipper {
 
         return new Promise<string>((resolve, reject) => {
             output.on('close', () => {
-                Logger.info(`ZIP file created: ${archive.pointer()} bytes.`);
+                Logger.info(`ZIP file created: ${archive.pointer()} bytes. Name: ${outputZipPath}`);
                 resolve(outputZipPath);
             });
 
