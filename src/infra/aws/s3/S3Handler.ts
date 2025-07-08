@@ -71,7 +71,7 @@ export class S3Handler implements IS3Handler {
     }
 
     async uploadZip(params: TUploadZipParams): Promise<TUploadZipResponse> {
-        const { bucket, outputKey, zipFilePath, fileType } = params;
+        const { bucket, outputKey, zipFilePath, fileType, fileName } = params;
         Logger.info("S3Handler", "Uploading zip file to S3", {
             bucket,
             outputKey,
@@ -82,7 +82,7 @@ export class S3Handler implements IS3Handler {
         const fileContent = readFileSync(zipFilePath);
         const command = new PutObjectCommand({
             Bucket: bucket,
-            Key: outputKey,
+            Key: `${outputKey}/${fileName}`,
             Body: fileContent,
             ContentType: fileType,
         });
