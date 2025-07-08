@@ -9,7 +9,6 @@ import { IZipper } from "../../infra/zipper/IZipper";
 import { Zipper } from "../../infra/zipper/Zipper";
 import { ICreateVideoFpsUseCase } from "./ICreateVideoFpsUseCase";
 import { TCreateVideoFpsUseCaseInput, TCreateVideoFpsUseCaseOutput } from "./TCreateVideoFpsUseCase";
-import * as fs from "fs/promises";
 
 export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
     constructor(

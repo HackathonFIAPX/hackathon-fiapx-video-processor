@@ -6,6 +6,12 @@ import { Logger } from '../utils/logger';
 export class Zipper {
     private TMP_DIR = "/tmp-zipper";
 
+    constructor() {
+        if (!fs.existsSync(this.TMP_DIR)) {
+            fs.mkdirSync(this.TMP_DIR, { recursive: true });
+        }
+    }
+
     public async zipFolder(folderName: string, expectedFileName: string): Promise<string> {
         const inputFolderPath = path.resolve(folderName);
 
