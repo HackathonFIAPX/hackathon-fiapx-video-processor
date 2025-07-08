@@ -19,9 +19,9 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
 
     async execute(input: TCreateVideoFpsUseCaseInput): Promise<TCreateVideoFpsUseCaseOutput> {
         const { bucket, key, eventIndex } = input;
+        Logger.info("CreateVideoFpsUseCase", "Executing create video FPS", { input });
+        
         if(eventIndex == 3) {
-            Logger.info("CreateVideoFpsUseCase", "Executing create video FPS", { input });
-
             const videoUrl = await this.s3Handler.generatePresignedURL({ bucket, key });
             const dirWithImages = await this.generateFPS(input, videoUrl);
             Logger.info("CreateVideoFpsUseCase", "FPS images generated", { dirWithImages });
