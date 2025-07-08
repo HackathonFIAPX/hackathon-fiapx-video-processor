@@ -11,28 +11,33 @@ export enum EVideoProcessorRoutes {
 
 export class VideoProcessor {
     static async handler(event: SQSEvent, _: Context) {
-        Logger.info('VideoProcessor.handler', 'start', event);
-        
-        const record = event.Records[0];
-        const body = JSON.parse(record.body);
-        const { Type, type, data } = body;
+        try {
+            Logger.info('VideoProcessor.handler', 'start', event);
+            
+            const record = event.Records[0];
+            const body = JSON.parse(record.body);
+            const { Type, type, data } = body;
 
-        const processS3NotificationsController = new ProcessS3NotificationsController();
-        const createVideoFpsController = new CreateVideoFpsController();
+            const processS3NotificationsController = new ProcessS3NotificationsController();
+            const createVideoFpsController = new CreateVideoFpsController();
 
-        const router = new Router();
-        router.use(EVideoProcessorRoutes.NOTIFICATION,processS3NotificationsController.execute.bind(processS3NotificationsController));
-        router.use(EVideoProcessorRoutes.GENERATE_FPS, createVideoFpsController.execute.bind(createVideoFpsController));
-        
-        let response;
-        if (EVideoProcessorRoutes.NOTIFICATION == Type) {
-            response = await router.execute(Type, body);
-        } else {
-            response = await router.execute(type, data);
+            const router = new Router();
+            router.use(EVideoProcessorRoutes.NOTIFICATION,processS3NotificationsController.execute.bind(processS3NotificationsController));
+            router.use(EVideoProcessorRoutes.GENERATE_FPS, createVideoFpsController.execute.bind(createVideoFpsController));
+            
+            let response;
+            if (EVideoProcessorRoutes.NOTIFICATION == Type) {
+                response = await router.execute(Type, body);
+            } else {
+                response = await router.execute(type, data);
+            }
+
+            Logger.info('VideoProcessor.handler', 'end', response);
+
+            return response;
+        } catch (error: any) {
+            Logger.error('VideoProcessor.handler', 'error', error);
+            throw new Error(`Error processing video: ${error?.message}`);
         }
-
-        Logger.info('VideoProcessor.handler', 'end', response);
-
-        return response;
     }
 }
