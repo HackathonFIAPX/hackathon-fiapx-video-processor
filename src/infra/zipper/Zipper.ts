@@ -4,7 +4,7 @@ import * as path from 'path';
 import { Logger } from '../utils/logger';
 
 export class Zipper {
-    private TMP_DIR = "/tmp-zipper";
+    private TMP_DIR = "/tmp/zipper";
 
     constructor() {
         if (!fs.existsSync(this.TMP_DIR)) {

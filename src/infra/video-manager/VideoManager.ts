@@ -9,7 +9,7 @@ import path from "path";
 const execPromise = promisify(exec);
 
 export class VideoManager implements IVideoManager {
-    private TMP_DIR = "/tmp";
+    private TMP_DIR = "/tmp/video";
 
     async getDurationFromS3VideoURL(
         params: TGetDurationFromS3VideoURLParams
