@@ -40,17 +40,6 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
             duration,
             fileName,
         });
-        if (input.eventIndex === input.totalEvents) {
-            Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "Generating FPS with start time")
-            const result = await this.videoManager.generateFPSFromS3VideoURLAndStartTime({
-                s3VideoURL,
-                startTime,
-                fileName,
-            });
-            
-            Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "FPS generated successfully", { imagesDir: result.imagesDir });
-            return result.imagesDir;
-        }
 
         Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "Generating FPS with specific duration");
         const result = await this.videoManager.generateFPSFromS3VideoURLAndSpecificDuration({

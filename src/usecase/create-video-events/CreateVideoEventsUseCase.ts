@@ -43,6 +43,7 @@ export class CreateVideoEventsUseCase implements ICreateVideoEventsUseCase {
             key,
             startTime: i * oneSecoundQtt,
             duration,
+            // duration: Math.trunc(duration),
             eventIndex: eventIndex,
             totalEvents: qttOfEventsToSend,
           };
