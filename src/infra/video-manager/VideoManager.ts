@@ -10,8 +10,8 @@ const execPromise = promisify(exec);
 
 export class VideoManager implements IVideoManager {
     private TMP_DIR = "/tmp/video";
-    private QTT_FRAMES = 2; // Number of frames to extract per second
-    private IMG_QUALITY = 10; // Quality of the output images (1-31, lower is better)
+    private QTT_FRAMES = 1; // Number of frames to extract per second
+    private IMG_QUALITY = 15; // Quality of the output images (1-31, lower is better)
 
     async getDurationFromS3VideoURL(
         params: TGetDurationFromS3VideoURLParams
@@ -50,7 +50,7 @@ export class VideoManager implements IVideoManager {
         // -r: Output frame rate (5 fps)
         // -q:v: Quality of the output video (2 is good for JPG, // 1-31, lower is better)
         // The output will be a series of JPG images named like `fileName-%03d.jpg` in the `/tmp` directory.
-        const cmd = `ffmpeg -y -i "${s3VideoURL}" -ss ${startTime} -t ${duration} -r ${this.QTT_FRAMES} -q:v ${this.IMG_QUALITY} ${outputPath} </dev/null`;
+        const cmd = `ffmpeg -loglevel debug -y -i "${s3VideoURL}" -ss ${startTime} -t ${duration} -r ${this.QTT_FRAMES} -q:v ${this.IMG_QUALITY} ${outputPath} </dev/null`;
         Logger.info("VideoManager", "Executing ffmpeg command", { cmd });
 
         return execPromise(cmd)
@@ -80,7 +80,7 @@ export class VideoManager implements IVideoManager {
         // -r: Output frame rate (5 fps)
         // -q:v: Quality of the output video (2 is good for JPG, // 1-31, lower is better)
         // The output will be a series of JPG images named like `fileName-%03d.jpg` in the `/tmp` directory.
-        const cmd = `ffmpeg -y -i "${s3VideoURL}" -ss ${startTime} -r ${this.QTT_FRAMES} -q:v ${this.IMG_QUALITY} ${outputPath} </dev/null`;
+        const cmd = `ffmpeg -loglevel debug -y -i "${s3VideoURL}" -ss ${startTime} -r ${this.QTT_FRAMES} -q:v ${this.IMG_QUALITY} ${outputPath} </dev/null`;
         Logger.info("VideoManager", "Executing ffmpeg command", { cmd });
 
         return execPromise(cmd)
