@@ -1,6 +1,11 @@
 resource "aws_sqs_queue" "processor_queue" {
   name = "video-processor-queue"
   visibility_timeout_seconds = 510
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.video_processor_dlq.arn
+    maxReceiveCount     = 5
+  })
 }
 
 resource "aws_sqs_queue_policy" "sqs_queue_allow_sns" {
@@ -24,4 +29,8 @@ resource "aws_sqs_queue_policy" "sqs_queue_allow_sns" {
       }
     ]
   })
+}
+
+resource "aws_sqs_queue" "video_processor_dlq" {
+  name = "video-processor-dlq"
 }
