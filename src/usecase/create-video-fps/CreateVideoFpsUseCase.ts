@@ -19,14 +19,17 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
     ) {}
 
     async execute(input: TCreateVideoFpsUseCaseInput): Promise<TCreateVideoFpsUseCaseOutput> {
-        const { bucket, key } = input;
-        Logger.info("CreateVideoFpsUseCase", "Executing create video FPS", { input });
+        const { bucket, key, eventIndex } = input;
+        if(eventIndex == 1) {
+            Logger.info("CreateVideoFpsUseCase", "Executing create video FPS", { input });
 
-        const videoUrl = await this.s3Handler.generatePresignedURL({ bucket, key });
-        const dirWithImages = await this.generateFPS(input, videoUrl);
-        const systemFile = await this.zipper.zipFolder(dirWithImages, `user-info-test-${Date.now()}`);
+            const videoUrl = await this.s3Handler.generatePresignedURL({ bucket, key });
+            const dirWithImages = await this.generateFPS(input, videoUrl);
+            Logger.info("CreateVideoFpsUseCase", "FPS images generated", { dirWithImages });
+            const systemFile = await this.zipper.zipFolder(dirWithImages, `user-info-test-${Date.now()}`);
 
-        await this.uploadZippedFileToS3(systemFile);
+            await this.uploadZippedFileToS3(systemFile);
+        }
     }
 
     private async generateFPS(input: TCreateVideoFpsUseCaseInput, s3VideoURL: string): Promise<string> {
