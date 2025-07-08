@@ -5,6 +5,8 @@ resource "aws_lambda_function" "video_processor" {
   role          = data.aws_iam_role.lab_role.arn
   timeout       = 500
 
+  memory_size   = 512
+
   environment {
     variables = {
       SQS_VIDEO_PROCESSOR_ID = aws_sqs_queue.processor_queue.id
