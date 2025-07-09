@@ -47,7 +47,7 @@ export class CreateVideoEventsUseCase implements ICreateVideoEventsUseCase {
             eventIndex: eventIndex,
             totalEvents: qttOfEventsToSend,
             clientId,
-            videoId
+            videoId: videoId.replace('.mp4', '')
           };
 
           Logger.info("CreateVideoEvents", "Creating video event", eventData);

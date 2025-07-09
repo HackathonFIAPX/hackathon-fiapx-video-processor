@@ -34,8 +34,8 @@ describe('when executing CreateVideoEventsUseCase', () => {
 
   it('should decode key, generate URL, calculate duration, and send events for long videos', async () => {
     const clientId = '123456';
-    const videoId = 'my_video.mp4';
-    const decodedKey = `temp_video/${clientId}/${videoId}`;
+    const videoId = 'my_video';
+    const decodedKey = `temp_video/${clientId}/${videoId}.mp4`;
 
     const input = {
       bucket: 'test-bucket',
@@ -135,8 +135,8 @@ describe('when executing CreateVideoEventsUseCase', () => {
 
   it('should send a single event for videos shorter than 60 seconds', async () => {
     const clientId = 'client-short';
-    const videoId = 'short_video.mp4';
-    const decodedKey = `temp_video/${clientId}/${videoId}`;
+    const videoId = 'short_video';
+    const decodedKey = `temp_video/${clientId}/${videoId}.mp4`;
 
     const input = {
       bucket: 'test-bucket',
@@ -177,7 +177,7 @@ describe('when executing CreateVideoEventsUseCase', () => {
     const key = `temp_video/${clientIdWithPlus}/${videoIdWithPlus}`;
     const decodedKey = 'temp_video/client id/my video.mp4';
     const expectedClientId = 'client id';
-    const expectedVideoId = 'my video.mp4';
+    const expectedVideoId = 'my video';
 
     const input = {
       bucket: 'test-bucket',
