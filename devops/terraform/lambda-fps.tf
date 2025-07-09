@@ -27,7 +27,7 @@ resource "aws_lambda_permission" "allow_fps_sqs" {
 
 resource "aws_lambda_event_source_mapping" "sqs_to_fps_lambda" {
   event_source_arn  = aws_sqs_queue.fps_queue.arn
-  function_name     = aws_lambda_function.video_fps.function_name
+  function_name     = "${aws_lambda_function.video_fps.function_name}:${aws_lambda_alias.video_fps_alias.name}"
   batch_size        = 5
   enabled           = true
 }
@@ -61,11 +61,4 @@ resource "aws_lambda_provisioned_concurrency_config" "video_fps_pc" {
   provisioned_concurrent_executions = 2
 
   depends_on = [null_resource.update_lambda_alias]
-}
-
-resource "aws_lambda_event_source_mapping" "sqs_to_fps_lambda" {
-  event_source_arn  = aws_sqs_queue.fps_queue.arn
-  function_name     = "${aws_lambda_function.video_fps.function_name}:${aws_lambda_alias.video_fps_alias.name}"
-  batch_size        = 5
-  enabled           = true
 }
