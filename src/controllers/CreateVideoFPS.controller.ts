@@ -11,6 +11,8 @@ export type TCreateVideoFpsController = {
     duration: number,
     eventIndex: number,
     totalEvents: number,
+    clientId: string,
+    videoId: string
 }
 
 export class CreateVideoFpsController implements IController<TCreateVideoFpsController> {

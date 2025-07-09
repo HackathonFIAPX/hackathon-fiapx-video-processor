@@ -54,8 +54,8 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
     }
 
     private async uploadZippedFileToS3(zipFilePath: string, input: TCreateVideoFpsUseCaseInput): Promise<void> {
-        const { eventIndex, startTime, totalEvents } = input;
-        const outputKey = `user_info/test`;
+        const { eventIndex, startTime, clientId, videoId } = input;
+        const outputKey = `${clientId}/${videoId}`;
         Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "Uploading zipped file to S3", { zipFilePath, outputKey });
 
         await this.s3Handler.uploadZip({

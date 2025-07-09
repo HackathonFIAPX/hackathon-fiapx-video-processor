@@ -30,6 +30,7 @@ export class CreateVideoEventsUseCase implements ICreateVideoEventsUseCase {
 
         const oneSecoundQtt = 60
         const qttOfEventsToSend = Math.ceil(videoDuration / oneSecoundQtt);
+        const [_, clientId, videoId] = decodedKey.split("/");
 
         for (let i = 0; i < qttOfEventsToSend; i++) {
           const eventIndex = i + 1; // Começa do 1 para facilitar a leitura
@@ -45,6 +46,8 @@ export class CreateVideoEventsUseCase implements ICreateVideoEventsUseCase {
             duration: Math.trunc(duration),
             eventIndex: eventIndex,
             totalEvents: qttOfEventsToSend,
+            clientId,
+            videoId
           };
 
           Logger.info("CreateVideoEvents", "Creating video event", eventData);

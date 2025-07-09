@@ -27,6 +27,8 @@ describe("CreateVideoFpsController", () => {
             duration: 10,
             eventIndex: 0,
             totalEvents: 1,
+            clientId: "test-client",
+            videoId: "test-video.mp4",
         };
         mockCreateVideoFpsUseCase.execute.mockResolvedValue(undefined);
 
@@ -49,6 +51,8 @@ describe("CreateVideoFpsController", () => {
             duration: 10,
             eventIndex: 0,
             totalEvents: 1,
+            clientId: "test-client",
+            videoId: "test-video.mp4",
         };
         const error = new Error("Use case error");
 
@@ -68,6 +72,8 @@ describe("CreateVideoFpsController", () => {
             duration: 10,
             eventIndex: 0,
             totalEvents: 1,
+            clientId: "test-client",
+            videoId: "test-video.mp4",
         };
         mockCreateVideoFpsUseCase.execute.mockResolvedValue(undefined);
 

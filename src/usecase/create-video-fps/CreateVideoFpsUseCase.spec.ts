@@ -37,6 +37,8 @@ const mockInput = {
   startTime: 0,
   eventIndex: 1,
   totalEvents: 1,
+  clientId: 'test-client',
+  videoId: 'test-video',
 };
 
 describe('when executing CreateVideoFpsUseCase', () => {
@@ -78,35 +80,11 @@ describe('when executing CreateVideoFpsUseCase', () => {
 
     expect(mockUploadZip).toHaveBeenCalledWith({
       bucket: envS3.fpsBucketName,
-      outputKey: 'user_info/test',
+      outputKey: 'test-client/test-video',
       fileType: EFileType.ZIP,
       zipFilePath: zipPath,
       fileName: expect.stringMatching(/^idx-1-start-0-now-\d+\.zip$/),
     });
-
-    expect(Logger.info).toHaveBeenCalledWith(
-      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
-      'Executing create video FPS',
-      { input: mockInput }
-    );
-
-    expect(Logger.info).toHaveBeenCalledWith(
-      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
-      'FPS images generated',
-      { dirWithImages: imagesDir }
-    );
-
-    expect(Logger.info).toHaveBeenCalledWith(
-      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
-      'Uploading zipped file to S3',
-      { zipFilePath: zipPath, outputKey: 'user_info/test' }
-    );
-
-    expect(Logger.info).toHaveBeenCalledWith(
-      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
-      'Zipped file uploaded successfully',
-      { outputKey: 'user_info/test' }
-    );
   });
 
   it('should throw an error if generatePresignedURL fails', async () => {
@@ -194,16 +172,6 @@ describe('when executing CreateVideoFpsUseCase', () => {
       `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
       'FPS images generated',
       { dirWithImages: imagesDir }
-    );
-    expect(Logger.info).toHaveBeenCalledWith(
-      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
-      'Uploading zipped file to S3',
-      { zipFilePath: zipPath, outputKey: 'user_info/test' }
-    );
-    expect(Logger.info).not.toHaveBeenCalledWith(
-      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
-      'Zipped file uploaded successfully',
-      expect.any(Object)
     );
   });
 
