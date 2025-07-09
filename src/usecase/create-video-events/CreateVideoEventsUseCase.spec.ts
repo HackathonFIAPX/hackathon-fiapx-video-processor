@@ -119,4 +119,9 @@ describe('when executing CreateVideoEventsUseCase', () => {
     expect(Logger.info).toHaveBeenCalledWith('CreateVideoEvents', 'Creating video event', expect.any(Object));
     expect(Logger.info).toHaveBeenCalledWith('CreateVideoEvents', 'Sending video event', expect.any(Object));
   });
+
+  it('when initialized without dependencies should still work', () => {
+    const useCaseWithoutDeps = new CreateVideoEventsUseCase();
+    expect(useCaseWithoutDeps).toBeInstanceOf(CreateVideoEventsUseCase);
+  });
 });

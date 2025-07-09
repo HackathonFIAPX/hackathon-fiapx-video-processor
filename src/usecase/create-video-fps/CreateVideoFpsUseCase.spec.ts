@@ -40,6 +40,13 @@ const mockInput = {
 };
 
 describe('when executing CreateVideoFpsUseCase', () => {
+  let useCase: CreateVideoFpsUseCase;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    useCase = new CreateVideoFpsUseCase(mockVideoManager, mockS3Handler, mockZipper);
+  });
+
   it('should generate FPS, zip the folder and upload to S3', async () => {
     const videoUrl = 'https://s3/video.mp4';
     const imagesDir = '/tmp/images';
@@ -50,7 +57,6 @@ describe('when executing CreateVideoFpsUseCase', () => {
     mockZipFolder.mockResolvedValue(zipPath);
     mockUploadZip.mockResolvedValue(undefined);
 
-    const useCase = new CreateVideoFpsUseCase(mockVideoManager, mockS3Handler, mockZipper);
     await useCase.execute(mockInput);
 
     expect(mockGeneratePresignedURL).toHaveBeenCalledWith({
@@ -101,5 +107,108 @@ describe('when executing CreateVideoFpsUseCase', () => {
       'Zipped file uploaded successfully',
       { outputKey: 'user_info/test' }
     );
+  });
+
+  it('should throw an error if generatePresignedURL fails', async () => {
+    const error = new Error('Presigned URL error');
+    mockGeneratePresignedURL.mockRejectedValue(error);
+
+    await expect(useCase.execute(mockInput)).rejects.toThrow(error);
+    expect(Logger.info).toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'Executing create video FPS',
+      { input: mockInput }
+    );
+    expect(Logger.info).not.toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'FPS images generated',
+      expect.any(Object)
+    );
+  });
+
+  it('should throw an error if generateFPS fails', async () => {
+    const videoUrl = 'https://s3/video.mp4';
+    const error = new Error('Generate FPS error');
+
+    mockGeneratePresignedURL.mockResolvedValue(videoUrl);
+    mockGenerateFPS.mockRejectedValue(error);
+
+    await expect(useCase.execute(mockInput)).rejects.toThrow(error);
+    expect(Logger.info).toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'Executing create video FPS',
+      { input: mockInput }
+    );
+    expect(Logger.info).not.toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'FPS images generated',
+      expect.any(Object)
+    );
+  });
+
+  it('should throw an error if zipFolder fails', async () => {
+    const videoUrl = 'https://s3/video.mp4';
+    const imagesDir = '/tmp/images';
+    const error = new Error('Zip folder error');
+
+    mockGeneratePresignedURL.mockResolvedValue(videoUrl);
+    mockGenerateFPS.mockResolvedValue({ imagesDir });
+    mockZipFolder.mockRejectedValue(error);
+
+    await expect(useCase.execute(mockInput)).rejects.toThrow(error);
+    expect(Logger.info).toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'Executing create video FPS',
+      { input: mockInput }
+    );
+    expect(Logger.info).toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'FPS images generated',
+      { dirWithImages: imagesDir }
+    );
+    expect(Logger.info).not.toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'Uploading zipped file to S3',
+      expect.any(Object)
+    );
+  });
+
+  it('should throw an error if uploadZip fails', async () => {
+    const videoUrl = 'https://s3/video.mp4';
+    const imagesDir = '/tmp/images';
+    const zipPath = '/tmp/images.zip';
+    const error = new Error('Upload zip error');
+
+    mockGeneratePresignedURL.mockResolvedValue(videoUrl);
+    mockGenerateFPS.mockResolvedValue({ imagesDir });
+    mockZipFolder.mockResolvedValue(zipPath);
+    mockUploadZip.mockRejectedValue(error);
+
+    await expect(useCase.execute(mockInput)).rejects.toThrow(error);
+    expect(Logger.info).toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'Executing create video FPS',
+      { input: mockInput }
+    );
+    expect(Logger.info).toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'FPS images generated',
+      { dirWithImages: imagesDir }
+    );
+    expect(Logger.info).toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'Uploading zipped file to S3',
+      { zipFilePath: zipPath, outputKey: 'user_info/test' }
+    );
+    expect(Logger.info).not.toHaveBeenCalledWith(
+      `CreateVideoFpsUseCase IDX: ${mockInput.eventIndex}`,
+      'Zipped file uploaded successfully',
+      expect.any(Object)
+    );
+  });
+
+  it('when initialized without dependencies should still work', () => {
+    const useCaseWithoutDeps = new CreateVideoFpsUseCase();
+    expect(useCaseWithoutDeps).toBeInstanceOf(CreateVideoFpsUseCase);
   });
 });
