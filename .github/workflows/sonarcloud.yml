@@ -42,11 +42,11 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.sonar_token }}
-          SONAR_PROJECT_KEY: HackathonFIAPX_hackathon-fiapx-admin
+          SONAR_PROJECT_KEY: HackathonFIAPX_hackathon-fiapx-video-processor
           SONAR_ORGANIZATION: hackathon-fiapx
         with:
           args: >
-            -Dsonar.projectKey=HackathonFIAPX_hackathon-fiapx-admin
+            -Dsonar.projectKey=HackathonFIAPX_hackathon-fiapx-video-processor
             -Dsonar.organization=hackathon-fiapx
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.sources=src
