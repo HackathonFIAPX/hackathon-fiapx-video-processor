@@ -13,6 +13,8 @@ resource "aws_lambda_function" "video_fps" {
       S3_FPS_BUCKET_NAME = aws_s3_bucket.video_fps_bucket.bucket
     }
   }
+
+  publish = true
 }
 
 resource "aws_lambda_permission" "allow_fps_sqs" {
@@ -26,6 +28,44 @@ resource "aws_lambda_permission" "allow_fps_sqs" {
 resource "aws_lambda_event_source_mapping" "sqs_to_fps_lambda" {
   event_source_arn  = aws_sqs_queue.fps_queue.arn
   function_name     = aws_lambda_function.video_fps.function_name
+  batch_size        = 5
+  enabled           = true
+}
+
+resource "aws_lambda_alias" "video_fps_alias" {
+  name             = "live"
+  description      = "Alias com concorrência provisionada"
+  function_name    = aws_lambda_function.video_fps.function_name
+  function_version = aws_lambda_function.video_fps.version
+}
+
+resource "null_resource" "update_lambda_alias" {
+  triggers = {
+    lambda_version = aws_lambda_function.video_fps.version
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      aws lambda update-alias \
+        --function-name ${aws_lambda_function.video_fps.function_name} \
+        --name ${aws_lambda_alias.video_fps_alias.name} \
+        --function-version ${aws_lambda_function.video_fps.version} \
+        --region ${var.aws_region}
+    EOT
+  }
+}
+
+resource "aws_lambda_provisioned_concurrency_config" "video_fps_pc" {
+  function_name                      = aws_lambda_function.video_fps.function_name
+  qualifier                          = aws_lambda_alias.video_fps_alias.name
+  provisioned_concurrent_executions = 2
+
+  depends_on = [null_resource.update_lambda_alias]
+}
+
+resource "aws_lambda_event_source_mapping" "sqs_to_fps_lambda" {
+  event_source_arn  = aws_sqs_queue.fps_queue.arn
+  function_name     = "${aws_lambda_function.video_fps.function_name}:${aws_lambda_alias.video_fps_alias.name}"
   batch_size        = 5
   enabled           = true
 }
