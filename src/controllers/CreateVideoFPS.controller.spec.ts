@@ -58,4 +58,24 @@ describe("CreateVideoFpsController", () => {
         expect(Logger.info).toHaveBeenCalledWith("CreateVideoFpsController", "Executing create video FPS", { input });
         expect(Logger.info).not.toHaveBeenCalledWith("CreateVideoFpsController", "Video FPS created successfully", expect.any(Object));
     });
+
+    it('when initialize without dependencies should still work', async () => {
+        const controllerWithoutDeps = new CreateVideoFpsController();
+        const input: TCreateVideoFpsController = {
+            bucket: "test-bucket",
+            key: "test-key",
+            startTime: 0,
+            duration: 10,
+            eventIndex: 0,
+            totalEvents: 1,
+        };
+        mockCreateVideoFpsUseCase.execute.mockResolvedValue(undefined);
+
+        const response = await controllerWithoutDeps.execute(input);
+        
+        expect(response).toEqual({
+            statusCode: 200,
+            body: undefined,
+        });
+    })
 });

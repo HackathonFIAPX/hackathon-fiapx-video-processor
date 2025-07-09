@@ -93,4 +93,30 @@ describe("ProcessS3NotificationsController", () => {
 
         await expect(controller.execute(request)).rejects.toThrow(error);
     });
+
+    it('when initialize without dependencies should still work', async () => {
+        const controllerWithoutDependencies = new ProcessS3NotificationsController();
+        const request = {
+            Message: JSON.stringify({
+                Records: [
+                    {
+                        s3: {
+                            bucket: { name: "test-bucket" },
+                            object: { key: "test-key" },
+                        },
+                    },
+                ],
+            }),
+        };
+
+        mockCreateVideoEventsUseCase.execute.mockResolvedValue(undefined);
+
+        const response = await controllerWithoutDependencies.execute(request);
+        expect(response).toEqual({
+            statusCode: 200,
+            body: JSON.stringify({
+                message: "S3 notification processed successfully",
+            }),
+        });
+    })
 });
