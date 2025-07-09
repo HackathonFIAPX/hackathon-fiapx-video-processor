@@ -5,7 +5,7 @@ resource "aws_lambda_function" "video_fps" {
   role          = data.aws_iam_role.lab_role.arn
   timeout       = 500
 
-  memory_size   = 512
+  memory_size   = 256
 
   environment {
     variables = {
@@ -58,7 +58,7 @@ resource "null_resource" "update_lambda_alias" {
 resource "aws_lambda_provisioned_concurrency_config" "video_fps_pc" {
   function_name                      = aws_lambda_function.video_fps.function_name
   qualifier                          = aws_lambda_alias.video_fps_alias.name
-  provisioned_concurrent_executions = 2
+  provisioned_concurrent_executions  = 5
 
   depends_on = [null_resource.update_lambda_alias]
 }
