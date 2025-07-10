@@ -9,6 +9,8 @@ resource "aws_lambda_function" "video_processor" {
     variables = {
       SQS_VIDEO_PROCESSOR_ID = aws_sqs_queue.fps_queue.id
       S3_FPS_BUCKET_NAME = aws_s3_bucket.video_fps_bucket.bucket
+      DYNAMODB_REGION = var.aws_region
+      DYNAMODB_TABLE = "fiapx-event-tracker"
     }
   }
 }
