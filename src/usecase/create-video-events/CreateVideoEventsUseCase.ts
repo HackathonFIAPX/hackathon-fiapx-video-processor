@@ -60,7 +60,7 @@ export class CreateVideoEventsUseCase implements ICreateVideoEventsUseCase {
 
           try {
             const eventTrackerRepository = new EventTrackerRepository();
-            eventTrackerRepository.create({
+            await eventTrackerRepository.create({
               id: clientId,
               videoId: videoId.replace('.mp4', ''),
               count: 0, // Inicializa o contador
