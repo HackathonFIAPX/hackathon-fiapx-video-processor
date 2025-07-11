@@ -4,6 +4,7 @@ import { IEventTrackerRepository } from "../../../../repositories/IEventTrackerR
 import { envAWS } from "../../../../config/aws";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { envDynamoDB } from "../../../../config/dynamodb";
+import { Logger } from "../../../utils/logger";
 
 export class EventTrackerRepository implements IEventTrackerRepository {
     private dynamoBDDocClient: DynamoDBDocumentClient
@@ -31,6 +32,7 @@ export class EventTrackerRepository implements IEventTrackerRepository {
     }
 
     async plusEventCount(eventTrackerId: string): Promise<void> {
+        Logger.info("EventTrackerRepository", "Incrementing event count", { eventTrackerId });
         const command = new UpdateCommand({
             TableName: envDynamoDB.eventTrackerTableName,
             Key: { id: eventTrackerId },
@@ -38,7 +40,7 @@ export class EventTrackerRepository implements IEventTrackerRepository {
             ExpressionAttributeNames: { "#count": "count" },
             ExpressionAttributeValues: { ":inc": 1 },
         })
-
+        Logger.info("EventTrackerRepository", "Executing UpdateCommand", { command });
         await this.dynamoBDDocClient.send(command);
         return;
     }
