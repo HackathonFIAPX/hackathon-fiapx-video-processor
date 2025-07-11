@@ -2,6 +2,7 @@ import { envS3 } from "../../config/s3";
 import { IS3Handler } from "../../infra/aws/s3/IS3Handler";
 import { S3Handler } from "../../infra/aws/s3/S3Handler";
 import { EFileType, EImageType } from "../../infra/aws/s3/TS3Handler";
+import { EventTrackerRepository } from "../../infra/persistence/dynamodb/repositories/EventTrackerRepository";
 import { Logger } from "../../infra/utils/logger";
 import { IVideoManager } from "../../infra/video-manager/IVideoManager";
 import { VideoManager } from "../../infra/video-manager/VideoManager";
@@ -28,6 +29,7 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
         const systemFile = await this.zipper.zipFolder(dirWithImages, `idx-${eventIndex}-start-${startTime}-now-${Date.now()}`);
 
         await this.uploadZippedFileToS3(systemFile, input);
+        await this.updateEventTracker(input)
     }
 
     private async generateFPS(input: TCreateVideoFpsUseCaseInput, s3VideoURL: string): Promise<string> {
@@ -67,5 +69,19 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
         });
 
         Logger.info(`CreateVideoFpsUseCase IDX: ${eventIndex}`, "Zipped file uploaded successfully", { outputKey });
+    }
+
+    private async updateEventTracker(input: TCreateVideoFpsUseCaseInput): Promise<void> {
+        const { clientId } = input;
+        try {
+            const eventTrackerRepository = new EventTrackerRepository();
+            eventTrackerRepository.plusEventCount(clientId)
+            Logger.info("CreateVideoFpsUseCase", "Event tracker count updated", input);
+        } catch (error) {
+            Logger.error("CreateVideoFpsUseCase", "Error update tracker count", {
+                error: (error as Error).message,
+                stack: (error as Error).stack
+            });
+        }
     }
 }

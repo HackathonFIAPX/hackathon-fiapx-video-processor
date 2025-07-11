@@ -1,6 +1,7 @@
 import { IS3Handler } from "../../infra/aws/s3/IS3Handler";
 import { S3Handler } from "../../infra/aws/s3/S3Handler";
 import { ESQSMessageType, SQSHandler } from "../../infra/aws/sqs/SQSHandler";
+import { EventTrackerRepository } from "../../infra/persistence/dynamodb/repositories/EventTrackerRepository";
 import { Logger } from "../../infra/utils/logger";
 import { IVideoManager } from "../../infra/video-manager/IVideoManager";
 import { VideoManager } from "../../infra/video-manager/VideoManager";
@@ -56,6 +57,26 @@ export class CreateVideoEventsUseCase implements ICreateVideoEventsUseCase {
             type: ESQSMessageType.GENERATE_FPS 
           })
           Logger.info("CreateVideoEvents", "Sending video event", eventData);
+
+          try {
+            const eventTrackerRepository = new EventTrackerRepository();
+            eventTrackerRepository.create({
+              id: clientId,
+              videoId: videoId.replace('.mp4', ''),
+              count: 0, // Inicializa o contador
+              total: qttOfEventsToSend // Define o total de eventos
+            })
+            Logger.info("CreateVideoEvents", "Event tracker created", {
+              clientId,
+              videoId: videoId.replace('.mp4', ''),
+              totalEvents: qttOfEventsToSend
+            });
+          } catch (error) {
+            Logger.error("CreateVideoEvents", "Error creating event tracker", {
+              error: (error as Error).message,
+              stack: (error as Error).stack
+            });
+          }
         }
         
     }
