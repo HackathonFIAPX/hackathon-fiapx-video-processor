@@ -13,6 +13,8 @@
   "author": "Gregori Simei",
   "license": "ISC",
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.830.0",
+    "@aws-sdk/lib-dynamodb": "^3.830.0",
     "@types/archiver": "^6.0.3",
     "@types/aws-lambda": "^8.10.147",
     "@types/axios": "^0.9.36",
@@ -32,6 +34,7 @@
     "archiver": "^7.0.1",
     "axios": "^1.8.4",
     "ts-node": "^10.9.2",
+    "uuid": "^11.1.0",
     "winston": "^3.17.0"
   }
 }
