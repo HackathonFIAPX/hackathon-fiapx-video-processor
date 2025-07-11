@@ -24,6 +24,7 @@ export class EventTrackerRepository implements IEventTrackerRepository {
         const command = new PutCommand({
             TableName: envDynamoDB.eventTrackerTableName,
             Item: JSON.parse(JSON.stringify(eventTracker)),
+            ConditionExpression: "attribute_not_exists(id) AND attribute_not_exists(videoId)"
         })
 
         await this.dynamoBDDocClient.send(command);
@@ -31,14 +32,21 @@ export class EventTrackerRepository implements IEventTrackerRepository {
         return eventTracker;
     }
 
-    async plusEventCount(eventTrackerId: string): Promise<void> {
+    async plusEventCount(eventTrackerId: string, videoId: string): Promise<void> {
         Logger.info("EventTrackerRepository", "Incrementing event count", { eventTrackerId });
         const command = new UpdateCommand({
             TableName: envDynamoDB.eventTrackerTableName,
-            Key: { id: eventTrackerId },
+            Key: {
+                id: eventTrackerId,
+                videoId: videoId
+            },
             UpdateExpression: "ADD #count :inc",
-            ExpressionAttributeNames: { "#count": "count" },
-            ExpressionAttributeValues: { ":inc": 1 },
+            ExpressionAttributeNames: {
+                "#count": "count"
+            },
+            ExpressionAttributeValues: {
+                ":inc": 1
+            }
         })
         Logger.info("EventTrackerRepository", "Executing UpdateCommand", { command });
         await this.dynamoBDDocClient.send(command);

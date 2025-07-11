@@ -72,10 +72,10 @@ export class CreateVideoFpsUseCase implements ICreateVideoFpsUseCase {
     }
 
     private async updateEventTracker(input: TCreateVideoFpsUseCaseInput): Promise<void> {
-        const { clientId } = input;
+        const { clientId, videoId } = input;
         try {
             const eventTrackerRepository = new EventTrackerRepository();
-            await eventTrackerRepository.plusEventCount(clientId)
+            await eventTrackerRepository.plusEventCount(clientId, videoId);
             Logger.info("CreateVideoFpsUseCase", "Event tracker count updated", input);
         } catch (error) {
             Logger.error("CreateVideoFpsUseCase", "Error update tracker count", {
