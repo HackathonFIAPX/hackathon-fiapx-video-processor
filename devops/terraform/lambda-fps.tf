@@ -44,7 +44,7 @@ resource "aws_lambda_alias" "video_fps_alias" {
 resource "aws_lambda_provisioned_concurrency_config" "video_fps_pc" {
   function_name                      = aws_lambda_function.video_fps.function_name
   qualifier                          = aws_lambda_alias.video_fps_alias.name
-  provisioned_concurrent_executions  = 1
+  provisioned_concurrent_executions  = 0
 
   depends_on = [aws_lambda_alias.video_fps_alias]
 }
